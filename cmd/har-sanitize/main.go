@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/nmelo/har-sanitize/har"
 	"os"
+	"path/filepath"
 )
 
 func isSessionCookie(name string) bool {
@@ -100,13 +101,16 @@ func main() {
 
 	sanitizeHar(harFile)
 
+	dir := filepath.Dir(harFileName)
+
+	modifiedFileName := filepath.Join(dir, "sanitized_"+filepath.Base(harFileName))
+
 	modifiedBytes, err := json.MarshalIndent(harFile, "", "  ")
 	if err != nil {
 		fmt.Printf("Error serializing to JSON: %s\n", err)
 		os.Exit(1)
 	}
 
-	modifiedFileName := "sanitized_" + harFileName
 	err = os.WriteFile(modifiedFileName, modifiedBytes, 0644)
 	if err != nil {
 		fmt.Printf("Error writing file: %s\n", err)
